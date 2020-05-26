@@ -13,7 +13,11 @@ pygame.display.set_caption("BINGO!")
 # GLOBAL CONSTANTS
 BLOCK_SIZE = 60
 MARGIN = 8
-N_BLOCKS = 6
+N_BLOCKS = 6		# SIZE OF GRID SQUARE
+RANGE = 36			# RANGE OF NUMBERS
+
+if RANGE < N_BLOCKS*N_BLOCKS:
+	RANGE = N_BLOCKS*N_BLOCKS
 
 # COLORS
 NUM_CLR = (0,0,0)
@@ -52,12 +56,6 @@ exit_font2 = pygame.font.Font(os.path.join("assets/Montserrat", "Montserrat-Medi
 PLAY_HOVER = True
 PLAY = True
 play_music = True
-
-
-def hover(rect):
-	if rect.collidepoint(pygame.mouse.get_pos()):
-		return True
-	return False
 
 
 def main_menu():
@@ -154,35 +152,86 @@ def end_screen():
 	pygame.display.flip()
 
 
+def hover(rect):
+	if rect.collidepoint(pygame.mouse.get_pos()):
+		return True
+	return False
+
+
 def play_sound(sound, volume=1):
 	pygame.mixer.music.load(sound)
 	pygame.mixer.music.set_volume(volume)
 	pygame.mixer.music.play()
 
+
+def show_numbers(grid1, grid2):
+	for column in range(N_BLOCKS):
+		for row in range(N_BLOCKS):
+			x = (MARGIN + BLOCK_SIZE) * column + MARGIN
+			y = (MARGIN + BLOCK_SIZE) * row + MARGIN
+
+			rect = (x, y, BLOCK_SIZE, BLOCK_SIZE)
+
+			if grid2[row,column] == 1:
+				WIN.blit(DARK_CIRCLE, (x,y))
+
+
+			text = font.render(str(grid1[row, column]), 1, NUM_CLR)
+			text_rect = text.get_rect()
+			text_rect.x = x+(BLOCK_SIZE/2) - text_rect.width/2
+			text_rect.y = y+(BLOCK_SIZE/2) - text_rect.height/2
+
+			if hover(text_rect):
+				text = font2.render(str(grid1[row, column]), 1, NUM_CLR)
+
+			WIN.blit(text, (x+(BLOCK_SIZE/2) - text_rect.width/2, y+(BLOCK_SIZE/2) - text_rect.height/2))
+
+
+def show_letters(n1, n2):
+	word = "BINGO"
+
+	if n2 > 0:
+		bingo = win_font.render(str(word[0:n2]), 1, BINGO_CLR)
+		bingo_rect = bingo.get_rect()
+		WIN.blit(bingo, ((WIDTH)/2-(bingo_rect.width/2 + (45/2)), HEIGHT-(bingo_rect.height)))
+
+	if n1 != n2:
+		play_sound(GET_LETTER, 0.15)
+
+
+def exit_btn():
+	exit_text = exit_font.render("X", 1, (155,0,0))
+	exit_rect = exit_text.get_rect()
+	exit_rect.x = WIDTH - (exit_rect.width + MARGIN)
+	exit_rect.y = HEIGHT - exit_rect.height
+
+	if hover(exit_rect):
+		exit_text = exit_font2.render("X", 1, (155,0,0))
+
+	WIN.blit(exit_text, (exit_rect.x, exit_rect.y))
+
+	return exit_rect
+
+
 def main():
 	global PLAY_HOVER
 
-	grid = np.arange(1, 37)
-	np.random.shuffle(grid)
-	grid = np.reshape(grid, (6, 6))
 
-	grid2 = np.zeros((6,6))
+	grid = random.sample(range(1, RANGE+1), N_BLOCKS*N_BLOCKS)
+	grid = np.array(grid)
+	grid = np.reshape(grid, (N_BLOCKS, N_BLOCKS))
 
+	grid2 = np.zeros((N_BLOCKS,N_BLOCKS))
+
+	run = True
 	win = False
 	m_menu = False
-
-	word = "BINGO"
-	run = True
 	clock = pygame.time.Clock()
 
-	clicked_x = []
-	clicked_y = []
-	diag_pos = [[0,5], [1,4], [2,3], [3,2], [4,1], [5,0]]
-	done_y = []
-	done_x = []
-	diag = []
-	diag2 = []
+	diag_pos = [[0,5], [1,4], [2,3], [3,2], [4,1], [5,0]]						# FIX ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	n_letters = 0
+	clicked = []
+	tkn_pos = []
 
 
 	# MAIN GAMELOOP
@@ -204,140 +253,80 @@ def main():
 
 
 		# SHOWING NUMBERS
-		for column in range(N_BLOCKS):
-			for row in range(N_BLOCKS):
-				x = (MARGIN + BLOCK_SIZE) * column + MARGIN
-				y = (MARGIN + BLOCK_SIZE) * row + MARGIN
-
-				rect = (x, y, BLOCK_SIZE, BLOCK_SIZE)
-
-				if grid2[row,column] == 1:
-					WIN.blit(DARK_CIRCLE, (x,y))
-
-
-				n_diag = 0
-				n_diag2 = 0
-				if len(diag) == 6:
-					n_diag = 1
-				elif len(diag) == 12:
-					n_diag = 2
-
-				if len(diag2) == 6:
-					n_diag2 = 1
-				elif len(diag2) == 12:
-					n_diag = 2
-
-
-				text = font.render(str(grid[row, column]), 1, NUM_CLR)
-				text_rect = text.get_rect()
-				text_rect.x = x+(BLOCK_SIZE/2) - text_rect.width/2
-				text_rect.y = y+(BLOCK_SIZE/2) - text_rect.height/2
-
-				if hover(text_rect):
-					text = font2.render(str(grid[row, column]), 1, NUM_CLR)
-
-				WIN.blit(text, (x+(BLOCK_SIZE/2) - text_rect.width/2, y+(BLOCK_SIZE/2) - text_rect.height/2))
-
+		show_numbers(grid, grid2)
 
 		# SHOWING BINGO LETTERS
 		n = n_letters
-		n_letters = len(done_x) + len(done_y) + n_diag + n_diag2
+		n_letters = len(tkn_pos)
 
-		if n_letters > 0:
-			bingo = win_font.render(str(word[0:n_letters]), 1, BINGO_CLR)
-			bingo_rect = bingo.get_rect()
-			WIN.blit(bingo, ((WIDTH)/2-(bingo_rect.width/2 + (45/2)), HEIGHT-(bingo_rect.height)))
-
-		if n != n_letters:
-			play_sound(GET_LETTER, 0.15)
-
+		show_letters(n, n_letters)
 
 		# SHOWING EXIT BUTTON
-		exit_text = exit_font.render("X", 1, (155,0,0))
-		exit_rect = exit_text.get_rect()
-		exit_rect.x = WIDTH - (exit_rect.width + MARGIN)
-		exit_rect.y = HEIGHT - exit_rect.height
-
-		if hover(exit_rect):
-			exit_text = exit_font2.render("X", 1, (155,0,0))
-
-		WIN.blit(exit_text, (exit_rect.x, exit_rect.y))
-
+		exit_btn()
 
 		# WINNING
 		if n_letters == 5:
 			win = True	
 
-		for i in clicked_y:
-			if clicked_y.count(i) >= 6 and i not in done_y:
-				done_y.append(i)
-
-		for j in clicked_x:
-			if clicked_x.count(j) >= 6 and j not in done_x:
-				done_x.append(j)
+		# CHECKING IF GOT LETTER
+		for i in clicked:
+			if clicked.count(i)	>= N_BLOCKS and i not in tkn_pos:
+				tkn_pos.append(i)		
 
 
 		for event in pygame.event.get():
+			# QUIT
 			if event.type == pygame.QUIT:
 				run = False
 				pygame.quit()
 
+			# CLICK
 			if event.type == pygame.MOUSEBUTTONDOWN and not win:
 
 				pos = pygame.mouse.get_pos()
 				column = pos[0] // (BLOCK_SIZE + MARGIN)
 				row = pos[1] // (BLOCK_SIZE + MARGIN)
 
-				if row < 6 and column < 6:
+				commands = [
+				lambda: clicked.remove(f"{row}y"),
+				lambda: clicked.remove(f"{column}x"),
+				lambda: clicked.remove("d1"),
+				lambda: clicked.remove("d2"),
+				lambda: tkn_pos.remove(f"{row}y"),
+				lambda: tkn_pos.remove(f"{column}x"),
+				lambda: tkn_pos.remove("d1"),
+				lambda: tkn_pos.remove("d2")
+				]
+
+				if row < N_BLOCKS and column < N_BLOCKS:
+					# IF ALREADY CLICKED: UNCLICK
 					if grid2[row,column] == 1:
 						grid2[row,column] = 0
 
 						play_sound(CLICK)
 
-						del clicked_y[clicked_y.index(row)]
-						del clicked_x[clicked_x.index(column)]
+						for cmd in commands:
+							try:
+								cmd()
+							except ValueError:
+								pass
 
-						try:
-							del done_y[done_y.index(row)] 
-						except Exception as e:
-							pass
-
-						try:
-							del done_x[done_x.index(column)]
-						except Exception as e:
-							pass
-
-						try:
-							del diag[diag.index([row,column])]
-						except Exception as e:
-							pass
-
-						try:
-							del diag2[diag2.index([row,column])]
-						except Exception as e:
-							pass
-
+					# IF NOT CLICKED: CLICK
 					else:
 						grid2[row,column] = 1
 
 						play_sound(CLICK)
 
 						if row == column:
-							diag.append([row,column])
-							clicked_y.append(row)
-							clicked_x.append(column)
+							clicked.append("d1")
 
 						elif [row,column] in diag_pos:
-							diag2.append([row,column])
-							clicked_y.append(row)
-							clicked_x.append(column)
+							clicked.append("d2")
 
-						else:
-							clicked_y.append(row)
-							clicked_x.append(column)
+						clicked.append(f"{row}y")
+						clicked.append(f"{column}x")
 
-
-				if hover(exit_rect):
+				if hover(exit_btn()):
 					play_sound(EXIT)
 
 					m_menu = True
