@@ -3,7 +3,6 @@ import pygame
 import random
 import time
 import os
-import simpleaudio as sa
 pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.mixer.init()
 pygame.init()
@@ -18,7 +17,7 @@ NUM_CLR = (0,0,0)
 BINGO_CLR = (155,0,0)
 WIN_CLR = (155,0,0)
 
-WIDTH = (BLOCK_SIZE * N_BLOCKS) + (MARGIN * N_BLOCKS) + MARGIN + 200
+WIDTH = (BLOCK_SIZE * N_BLOCKS) + (MARGIN * N_BLOCKS) + MARGIN
 HEIGHT = (BLOCK_SIZE * N_BLOCKS) + (MARGIN * N_BLOCKS) + MARGIN + 75 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 
@@ -39,7 +38,6 @@ GET_LETTER = os.path.join("assets", "letter.mp3")
 WIN_GAME = os.path.join("assets", "positive.wav")
 LOSE_GAME = os.path.join("assets", "negative.wav")
 EXIT = os.path.join("assets", "exit.mp3")
-GAME_MUSIC = os.path.join("assets", "game_music.wav")
 
 
 PLAY_HOVER = True
@@ -48,8 +46,8 @@ font = pygame.font.Font(os.path.join("assets/Montserrat", "Montserrat-Light.ttf"
 font2 = pygame.font.Font(os.path.join("assets/Montserrat", "Montserrat-Medium.ttf"), 35)
 win_font = pygame.font.Font(os.path.join("assets/Montserrat", "Montserrat-Light.ttf"), 70)
 win_font2 = pygame.font.Font(os.path.join("assets/Montserrat", "Montserrat-Medium.ttf"), 70)
-exit_font = pygame.font.Font(os.path.join("assets/Montserrat", "Montserrat-Light.ttf"), 50)
-exit_font2 = pygame.font.Font(os.path.join("assets/Montserrat", "Montserrat-Medium.ttf"), 50)
+exit_font = pygame.font.Font(os.path.join("assets/Montserrat", "Montserrat-Light.ttf"), 70)
+exit_font2 = pygame.font.Font(os.path.join("assets/Montserrat", "Montserrat-Medium.ttf"), 70)
 
 
 play_sound = True
@@ -185,7 +183,7 @@ def main():
 
 	random_numbers = list(range(1, 37))
 
-	num_text = win_font.render('', 1, (0,0,0))
+	# num_text = win_font.render('', 1, (0,0,0))
 
 	while run:
 		if win:
@@ -251,14 +249,14 @@ def main():
 		if n_letters > 0:
 			bingo = win_font.render(str(word[0:n_letters]), 1, BINGO_CLR)
 			bingo_rect = bingo.get_rect()
-			WIN.blit(bingo, ((WIDTH-100)/2-(bingo_rect.width/2), HEIGHT-(bingo_rect.height)))
+			WIN.blit(bingo, ((WIDTH)/2-(bingo_rect.width/2 + (45/2)), HEIGHT-(bingo_rect.height)))
 		if n_letters == 5:
 			win = True	
 
 		if n != n_letters:
 			pygame.mixer.music.load(GET_LETTER)
 			pygame.mixer.music.set_volume(0.15)
-			pygame.mixer.music.play()
+			# pygame.mixer.music.play()
 
 		for i in clicked_y:
 			if clicked_y.count(i) >= 6 and i not in done_y:
@@ -268,22 +266,22 @@ def main():
 			if clicked_x.count(j) >= 6 and j not in done_x:
 				done_x.append(j)
 
-		get_num_text = win_font.render("NUM", 1, (0,0,0))
-		get_num_rect = get_num_text.get_rect()
-		get_num_rect.x = WIDTH - (get_num_rect.width+MARGIN)
-		get_num_rect.y = HEIGHT/2 - get_num_rect.height/2
+		# get_num_text = win_font.render("NUM", 1, (0,0,0))
+		# get_num_rect = get_num_text.get_rect()
+		# get_num_rect.x = WIDTH - (get_num_rect.width+MARGIN)
+		# get_num_rect.y = HEIGHT/2 - get_num_rect.height/2
 
-		num_text_rect = num_text.get_rect()
-		num_text_rect.x = WIDTH - (get_num_rect.width/2 + num_text_rect.width/2 + MARGIN)
-		num_text_rect.y = HEIGHT/2 - (num_text_rect.height/2 + get_num_rect.height)
+		# num_text_rect = num_text.get_rect()
+		# num_text_rect.x = WIDTH - (get_num_rect.width/2 + num_text_rect.width/2 + MARGIN)
+		# num_text_rect.y = HEIGHT/2 - (num_text_rect.height/2 + get_num_rect.height)
 
-		exit_text = exit_font.render("EXIT", 1, (0,0,0))
+		exit_text = exit_font.render("X", 1, (155,0,0))
 		exit_rect = exit_text.get_rect()
 		exit_rect.x = WIDTH - (exit_rect.width + MARGIN)
 		exit_rect.y = HEIGHT - exit_rect.height
 
 		if exit_rect.collidepoint(pygame.mouse.get_pos()):
-			exit_text = exit_font2.render("EXIT", 1, (0,0,0))
+			exit_text = exit_font2.render("X", 1, (155,0,0))
 
 		WIN.blit(exit_text, (exit_rect.x, exit_rect.y))
 
@@ -350,20 +348,20 @@ def main():
 							clicked_x.append(column)
 
 
-				if get_num_rect.collidepoint(event.pos):
-					pygame.mixer.music.load(CLICK2)
-					pygame.mixer.music.set_volume(1)
-					pygame.mixer.music.play()
+				# if get_num_rect.collidepoint(event.pos):
+				# 	pygame.mixer.music.load(CLICK2)
+				# 	pygame.mixer.music.set_volume(1)
+				# 	pygame.mixer.music.play()
 
-					if len(random_numbers) == 0:
-						lose = True
-					if not lose:
-						num = random.choice(random_numbers)
-						del random_numbers[random_numbers.index(num)]
+				# 	if len(random_numbers) == 0:
+				# 		lose = True
+				# 	if not lose:
+				# 		num = random.choice(random_numbers)
+				# 		del random_numbers[random_numbers.index(num)]
 
-						num_text = win_font.render(str(num),1,WIN_CLR)
+				# 		num_text = win_font.render(str(num),1,WIN_CLR)
 
-						get_num_text = win_font.render("NUM", 1, (0,0,0))
+				# 		get_num_text = win_font.render("NUM", 1, (0,0,0))
 
 				if exit_rect.collidepoint(event.pos):
 					pygame.mixer.music.load(EXIT)
@@ -375,11 +373,11 @@ def main():
 
 		ps = pygame.mouse.get_pos()
 
-		if get_num_rect.collidepoint(ps):
-			get_num_text = win_font2.render("NUM", 1, (0,0,0))
+		# if get_num_rect.collidepoint(ps):
+		# 	get_num_text = win_font2.render("NUM", 1, (0,0,0))
 
-		WIN.blit(num_text, (num_text_rect.x, num_text_rect.y))
-		WIN.blit(get_num_text, (get_num_rect.x, get_num_rect.y))
+		# WIN.blit(num_text, (num_text_rect.x, num_text_rect.y))
+		# WIN.blit(get_num_text, (get_num_rect.x, get_num_rect.y))
 				
 		clock.tick(60)
 		pygame.display.flip()
