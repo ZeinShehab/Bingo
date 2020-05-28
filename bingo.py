@@ -3,6 +3,7 @@ import pygame
 import random
 import time
 import os
+import sys
 pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.mixer.init()
 pygame.init()
@@ -12,7 +13,7 @@ pygame.display.set_caption("BINGO!")
 
 # GLOBAL CONSTANTS
 BLOCK_SIZE = 60
-MARGIN = 8
+MARGIN = 10
 N_BLOCKS = 6		# SIZE OF GRID SQUARE
 RANGE = 36			# RANGE OF NUMBERS
 
@@ -20,9 +21,9 @@ if RANGE < N_BLOCKS*N_BLOCKS:
 	RANGE = N_BLOCKS*N_BLOCKS
 
 # COLORS
+ACCENT = (130,30,30)
 NUM_CLR = (0,0,0)
-BINGO_CLR = (155,0,0)
-WIN_CLR = (155,0,0)
+MENU_CLR = (0,0,0)
 
 # GAME WINDOW 
 WIDTH = (BLOCK_SIZE * N_BLOCKS) + (MARGIN * N_BLOCKS) + MARGIN
@@ -66,16 +67,16 @@ def main_menu():
 
 
 	# PLAY TEXT
-	play_text = win_font.render("PLAY", 1, NUM_CLR)
+	play_text = win_font.render("PLAY", 1, MENU_CLR)
 	play_rect = play_text.get_rect()
-	play_rect.x = WIDTH/2 - play_rect.width/2
-	play_rect.y = HEIGHT/2 - play_rect.height/2
+	play_rect.x = int(WIDTH/2 - play_rect.width/2)
+	play_rect.y = int(HEIGHT/2 - play_rect.height/2)
 
 	if hover(play_rect):
 		if PLAY_HOVER:
 			play_sound(HOVER)
 			PLAY_HOVER = False
-		play_text = win_font2.render("PLAY", 1, NUM_CLR)
+		play_text = win_font2.render("PLAY", 1, ACCENT)
 	else:
 		PLAY_HOVER = True
 
@@ -90,6 +91,7 @@ def main_menu():
 		if event.type == pygame.QUIT:
 			run = False
 			pygame.quit()
+			sys.exit()
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			if hover(play_rect):
@@ -108,28 +110,30 @@ def end_screen():
 		PLAY = False
 
 	# DISPLAYING TEXT
-	win_text = win_font.render("YOU WIN!", 1, WIN_CLR)
+	win_text = win_font.render("YOU WIN!", 1, ACCENT)
 	win_rect = win_text.get_rect()
+	win_rect.x = int(WIDTH/2 - win_rect.width/2)
+	win_rect.y = int((HEIGHT-75)/2 - win_rect.height/2)
 
-	rest_text = win_font.render("RESTART", 1, NUM_CLR)
+	rest_text = win_font.render("RESTART", 1, MENU_CLR)
 	rest_rect = rest_text.get_rect()
-	rest_rect.x = WIDTH/2 - rest_rect.width/2
-	rest_rect.y = (HEIGHT-75)/2 + win_rect.height+10
+	rest_rect.x = int(WIDTH/2 - rest_rect.width/2)
+	rest_rect.y = int((HEIGHT-75)/2 + win_rect.height+10)
 
 
-	# MAKING TEXT INTERACTIVE
+	# MAKING RESTART INTERACTIVE
 	if hover(rest_rect):
 		if PLAY_HOVER:
 			play_sound(HOVER)
 			PLAY_HOVER = False
-		rest_text = win_font2.render("RESTART", 1, NUM_CLR)
+		rest_text = win_font2.render("RESTART", 1, ACCENT)
 	else:
 		PLAY_HOVER = True
 
 
 	WIN.blit(BG, (0,0))
-	WIN.blit(win_text, (WIDTH/2 - win_rect.width/2, (HEIGHT-75)/2 - win_rect.height/2))
-	WIN.blit(rest_text, (WIDTH/2 - rest_rect.width/2, (HEIGHT-75)/2 + win_rect.height+10))
+	WIN.blit(win_text, (win_rect.x, win_rect.y))
+	WIN.blit(rest_text, (rest_rect.x, rest_rect.y))
 
 
 	# CLICK ON RESTART
@@ -137,6 +141,7 @@ def end_screen():
 		if event.type == pygame.QUIT:
 			run = False
 			pygame.quit()
+			sys.exit()
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			if hover(rest_rect):
@@ -178,35 +183,38 @@ def show_numbers(grid1, grid2):
 
 			text = font.render(str(grid1[row, column]), 1, NUM_CLR)
 			text_rect = text.get_rect()
-			text_rect.x = x+(BLOCK_SIZE/2) - text_rect.width/2
-			text_rect.y = y+(BLOCK_SIZE/2) - text_rect.height/2
+			text_rect.x = int(x+(BLOCK_SIZE/2) - text_rect.width/2)
+			text_rect.y = int(y+(BLOCK_SIZE/2) - text_rect.height/2)
 
 			if hover(text_rect):
-				text = font2.render(str(grid1[row, column]), 1, NUM_CLR)
+				text = font2.render(str(grid1[row, column]), 1, ACCENT)
 
-			WIN.blit(text, (x+(BLOCK_SIZE/2) - text_rect.width/2, y+(BLOCK_SIZE/2) - text_rect.height/2))
+			WIN.blit(text, (text_rect.x, text_rect.y))
 
 
 def show_letters(n1, n2):
 	word = "BINGO"
 
 	if n2 > 0:
-		bingo = win_font.render(str(word[0:n2]), 1, BINGO_CLR)
+		bingo = win_font.render(str(word[0:n2]), 1, ACCENT)
 		bingo_rect = bingo.get_rect()
-		WIN.blit(bingo, ((WIDTH)/2-(bingo_rect.width/2 + (45/2)), HEIGHT-(bingo_rect.height)))
+		bingo_rect.x = int(WIDTH/2-(bingo_rect.width/2 + (45/2)))
+		bingo_rect.y = int(HEIGHT-(bingo_rect.height))
+
+		WIN.blit(bingo, (bingo_rect.x, bingo_rect.y))
 
 	if n1 != n2:
 		play_sound(GET_LETTER, 0.15)
 
 
 def exit_btn():
-	exit_text = exit_font.render("X", 1, (155,0,0))
+	exit_text = exit_font.render("x", 1, ACCENT)
 	exit_rect = exit_text.get_rect()
-	exit_rect.x = WIDTH - (exit_rect.width + MARGIN)
-	exit_rect.y = HEIGHT - exit_rect.height
+	exit_rect.x = int(WIDTH - (exit_rect.width + 2*MARGIN))
+	exit_rect.y = int(HEIGHT - exit_rect.height)
 
 	if hover(exit_rect):
-		exit_text = exit_font2.render("X", 1, (155,0,0))
+		exit_text = exit_font2.render("x", 1, ACCENT)
 
 	WIN.blit(exit_text, (exit_rect.x, exit_rect.y))
 
@@ -228,10 +236,18 @@ def main():
 	m_menu = False
 	clock = pygame.time.Clock()
 
-	diag_pos = [[0,5], [1,4], [2,3], [3,2], [4,1], [5,0]]						# FIX ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	n_letters = 0
 	clicked = []
 	tkn_pos = []
+
+	# DIAGONAL
+	n1 = 0
+	n2 = N_BLOCKS-1
+	diag_pos = []
+	for _ in range(0, N_BLOCKS):
+		diag_pos.append([n1, n2])
+		n1 += 1
+		n2 -= 1
 
 
 	# MAIN GAMELOOP
@@ -279,6 +295,7 @@ def main():
 			if event.type == pygame.QUIT:
 				run = False
 				pygame.quit()
+				sys.exit()
 
 			# CLICK
 			if event.type == pygame.MOUSEBUTTONDOWN and not win:
@@ -287,16 +304,6 @@ def main():
 				column = pos[0] // (BLOCK_SIZE + MARGIN)
 				row = pos[1] // (BLOCK_SIZE + MARGIN)
 
-				commands = [
-				lambda: clicked.remove(f"{row}y"),
-				lambda: clicked.remove(f"{column}x"),
-				lambda: clicked.remove("d1"),
-				lambda: clicked.remove("d2"),
-				lambda: tkn_pos.remove(f"{row}y"),
-				lambda: tkn_pos.remove(f"{column}x"),
-				lambda: tkn_pos.remove("d1"),
-				lambda: tkn_pos.remove("d2")
-				]
 
 				if row < N_BLOCKS and column < N_BLOCKS:
 					# IF ALREADY CLICKED: UNCLICK
@@ -305,11 +312,30 @@ def main():
 
 						play_sound(CLICK)
 
-						for cmd in commands:
-							try:
-								cmd()
-							except ValueError:
-								pass
+						# REMOVE FROM D1
+						if row == column:
+							clicked.remove("d1")
+
+							if "d1" in tkn_pos:
+								tkn_pos.remove("d1")
+
+						# REMOVE FROM D2
+						if [row,column] in diag_pos:
+							clicked.remove("d2")
+
+							if "d2" in tkn_pos:
+								tkn_pos.remove("d2")
+
+						# REMOVE X AND Y
+						clicked.remove(f"{row}y")
+						clicked.remove(f"{column}x")
+
+						if f"{row}y" in tkn_pos:
+							tkn_pos.remove(f"{row}y")
+
+						if f"{column}x" in tkn_pos:
+							tkn_pos.remove(f"{column}x")
+
 
 					# IF NOT CLICKED: CLICK
 					else:
@@ -317,12 +343,15 @@ def main():
 
 						play_sound(CLICK)
 
+						# ADD TO D1
 						if row == column:
 							clicked.append("d1")
 
+						# ADD TO D2
 						elif [row,column] in diag_pos:
 							clicked.append("d2")
 
+						# ADD X AND Y
 						clicked.append(f"{row}y")
 						clicked.append(f"{column}x")
 
