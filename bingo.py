@@ -20,6 +20,10 @@ RANGE = 36  # RANGE OF NUMBERS
 if RANGE < N_BLOCKS * N_BLOCKS:
     RANGE = N_BLOCKS * N_BLOCKS
 
+# GLOBAL VARIABLES
+PLAY_HOVER = True
+PLAY = True
+
 # COLORS
 ACCENT = (130, 30, 30)
 NUM_CLR = (0, 0, 0)
@@ -31,29 +35,25 @@ HEIGHT = (BLOCK_SIZE * N_BLOCKS) + (MARGIN * N_BLOCKS) + MARGIN + 75
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 
 # LOADING IMAGES
-BG = pygame.transform.scale(pygame.image.load(os.path.join("assets", "bg.jpg")), (WIDTH, HEIGHT))
-CIRCLE = pygame.image.load(os.path.join("assets", "dark_circle.png"))
-DARK_CIRCLE = pygame.transform.scale(CIRCLE, (BLOCK_SIZE, BLOCK_SIZE))
+BG = pygame.transform.scale(pygame.image.load(os.path.join("assets/Images", "bg.jpg")), (WIDTH, HEIGHT))
+CIRCLE = pygame.transform.scale(pygame.image.load(os.path.join("assets/Images", "circle.png")),
+                                (BLOCK_SIZE, BLOCK_SIZE))
 
 # LOADING AUDIO
-HOVER = os.path.join("assets", "hover.mp3")
-CLICK = os.path.join("assets", "click.mp3")
-CLICK2 = os.path.join("assets", "click2.mp3")
-MENU_CLICK = os.path.join("assets", "menu_click.mp3")
-GET_LETTER = os.path.join("assets", "letter.mp3")
-WIN_GAME = os.path.join("assets", "positive.wav")
-LOSE_GAME = os.path.join("assets", "negative.wav")
-EXIT = os.path.join("assets", "exit.mp3")
+HOVER = os.path.join("assets/Audio", "hover.mp3")
+CLICK = os.path.join("assets/Audio", "click.mp3")
+CLICK2 = os.path.join("assets/Audio", "click2.mp3")
+MENU_CLICK = os.path.join("assets/Audio", "menu_click.mp3")
+GET_LETTER = os.path.join("assets/Audio", "letter.mp3")
+WIN_GAME = os.path.join("assets/Audio", "positive.wav")
+LOSE_GAME = os.path.join("assets/Audio", "negative.wav")
+EXIT = os.path.join("assets/Audio", "exit.mp3")
 
-# FONTS
+# LOADING FONTS
 NUM_FONT = pygame.font.Font(os.path.join("assets/Montserrat", "Montserrat-Light.ttf"), 35)
 NUM_FONT_2 = pygame.font.Font(os.path.join("assets/Montserrat", "Montserrat-Medium.ttf"), 35)
 MENU_FONT = pygame.font.Font(os.path.join("assets/Montserrat", "Montserrat-Light.ttf"), 70)
 MENU_FONT_2 = pygame.font.Font(os.path.join("assets/Montserrat", "Montserrat-Medium.ttf"), 70)
-
-PLAY_HOVER = True
-PLAY = True
-play_music = True
 
 
 def main_menu():
@@ -160,7 +160,7 @@ def show_numbers(grid1, grid2):
             y = (MARGIN + BLOCK_SIZE) * row + MARGIN
 
             if grid2[row, column] == 1:
-                WIN.blit(DARK_CIRCLE, (x, y))
+                WIN.blit(CIRCLE, (x, y))
 
             text = NUM_FONT.render(str(grid1[row, column]), 1, NUM_CLR)
             text_rect = text.get_rect()
