@@ -41,8 +41,8 @@ CIRCLE = pygame.transform.scale(pygame.image.load(os.path.join("assets/Images", 
 
 # LOADING AUDIO
 HOVER = os.path.join("assets/Audio", "hover.mp3")
-CLICK = os.path.join("assets/Audio", "click.mp3")
-CLICK2 = os.path.join("assets/Audio", "click2.mp3")
+SCRATCH = os.path.join("assets/Audio", "scratch.mp3")
+REV_SCRATCH = os.path.join("assets/Audio", "reverse_scratch.mp3")
 MENU_CLICK = os.path.join("assets/Audio", "menu_click.mp3")
 GET_LETTER = os.path.join("assets/Audio", "letter.mp3")
 WIN_GAME = os.path.join("assets/Audio", "positive.wav")
@@ -54,6 +54,7 @@ NUM_FONT = pygame.font.Font(os.path.join("assets/Montserrat", "Montserrat-Light.
 NUM_FONT_2 = pygame.font.Font(os.path.join("assets/Montserrat", "Montserrat-Medium.ttf"), 35)
 MENU_FONT = pygame.font.Font(os.path.join("assets/Montserrat", "Montserrat-Light.ttf"), 70)
 MENU_FONT_2 = pygame.font.Font(os.path.join("assets/Montserrat", "Montserrat-Medium.ttf"), 70)
+SCRATCH_FONT = pygame.font.Font(os.path.join("assets/Montserrat", "Montserrat-Medium.ttf"), 50)
 
 
 def main_menu():
@@ -160,7 +161,8 @@ def show_numbers(grid1, grid2):
             y = (MARGIN + BLOCK_SIZE) * row + MARGIN
 
             if grid2[row, column] == 1:
-                WIN.blit(CIRCLE, (x, y))
+                scatch = SCRATCH_FONT.render("/",1,ACCENT)
+                WIN.blit(scatch, (x+15, y))
 
             text = NUM_FONT.render(str(grid1[row, column]), 1, NUM_CLR)
             text_rect = text.get_rect()
@@ -284,7 +286,7 @@ def main():
                     if grid2[row, column] == 1:
                         grid2[row, column] = 0
 
-                        play_sound(CLICK)
+                        play_sound(REV_SCRATCH)
 
                         # REMOVE FROM D1
                         if row == column:
@@ -314,7 +316,7 @@ def main():
                     else:
                         grid2[row, column] = 1
 
-                        play_sound(CLICK)
+                        play_sound(SCRATCH)
 
                         # ADD TO D1
                         if row == column:
