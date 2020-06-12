@@ -161,8 +161,8 @@ def show_numbers(grid1, grid2):
             y = (MARGIN + BLOCK_SIZE) * row + MARGIN
 
             if grid2[row, column] == 1:
-                scatch = SCRATCH_FONT.render("/",1,ACCENT)
-                WIN.blit(scatch, (x+15, y))
+                scratch = SCRATCH_FONT.render("/",1,ACCENT)
+                WIN.blit(scratch, (x+15, y))
 
             text = NUM_FONT.render(str(grid1[row, column]), 1, NUM_CLR)
             text_rect = text.get_rect()
